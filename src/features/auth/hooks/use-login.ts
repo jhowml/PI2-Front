@@ -13,6 +13,7 @@ export function useLogin() {
     const { mutateAsync, isPending, error } = useMutation({
         mutationFn: (payload: LoginPayload) => login(payload),
         onSuccess: ({ token }) => {
+            toast.dismiss()
             setToken(token)
             router.push('/')
         },
