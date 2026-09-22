@@ -76,6 +76,7 @@ Variáveis opcionais do `next.config.ts` para o hot reload: `NEXT_DISABLE_WATCH_
 
 ### Regras refletidas na interface
 
+- **Cliente no pedido:** a busca é feita por **telefone ou endereço** (ex.: `13 99123`, `dom pedro 350`, `enseada`); cada resultado mostra telefone, endereço e, por último, o nome. Se o cliente não existir, o botão **Cadastrar novo cliente** abre o cadastro dentro da mesma janela do pedido, com o telefone digitado já preenchido; os itens do pedido ficam guardados e, ao salvar, o cliente volta selecionado. Para entrega, um aviso aparece se o cliente não tiver endereço.
 - **Novo pedido:** só itens **disponíveis** do cardápio aparecem; cada item entra uma única vez (ajuste a quantidade). Em **retirada**, a taxa de entrega fica desabilitada. O resumo mostra uma **prévia** de `itens + taxa − desconto`; o valor gravado é sempre o calculado pela API. Desconto maior que o total bloqueia o envio.
 - **CEP:** ao digitar os 8 dígitos, o endereço é buscado na API e o foco vai para o número. CEP inexistente ou serviço fora do ar mostram um aviso e o endereço pode ser preenchido à mão.
 - **Valores monetários** aceitam vírgula (`12,50`) e são tratados em centavos para evitar erros de arredondamento.

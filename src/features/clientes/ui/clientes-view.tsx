@@ -31,7 +31,7 @@ export function ClientesView() {
                 <FormField label="Buscar clientes" hideLabel>
                     <Input
                         type="search"
-                        placeholder="Buscar por nome ou telefone..."
+                        placeholder="Buscar por telefone, endereço ou nome..."
                         value={search}
                         onChange={(e) => {
                             setSearch(e.target.value)

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { ArrowLeft } from "lucide-react"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Plus, Trash2 } from "lucide-react"
@@ -8,16 +9,19 @@ import { Modal } from "@/shared/components/ui/modal"
 import { FormField } from "@/shared/components/ui/form-field"
 import { Input, Select, TextArea } from "@/shared/components/ui/input"
 import { Button } from "@/components"
-import { useDebounce } from "@/shared/hooks/use-debounce"
 import { formatCents, formatCurrency, formatPhone } from "@/shared/lib/format"
 import { moneyToNumber } from "@/shared/lib/money"
 import { cn } from "@/shared/lib/cn"
-import { useClientes } from "@/features/clientes/hooks/use-clientes"
+import type { Cliente } from "@/features/clientes"
+import { useCreateCliente } from "@/features/clientes/hooks/use-create-cliente"
+import type { CreateClientePayload } from "@/features/clientes/services"
+import { ClienteForm } from "@/features/clientes/ui/cliente-form"
 import { useCardapio } from "@/features/cardapio/hooks/use-cardapio"
 import { useCreatePedido } from "../hooks/use-create-pedido"
 import { pedidoSchema, PedidoFormData } from "../schema"
 import { calculatePedidoTotals } from "../totals"
 import { TIPO_ENTREGA_LABELS, TIPOS_ENTREGA } from "../types"
+import { ClienteSelector } from "./cliente-selector"
 
 const DEFAULT_VALUES: PedidoFormData = {
     clienteId: "",
@@ -34,9 +38,9 @@ interface ModalPedidoProps {
 }
 
 export function ModalPedido({ open, onClose }: ModalPedidoProps) {
-    const [clienteSearch, setClienteSearch] = useState("")
-    const debouncedClienteSearch = useDebounce(clienteSearch)
-    const { clientes } = useClientes({ pageSize: 50, search: debouncedClienteSearch || undefined })
+    const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null)
+    const [novoCliente, setNovoCliente] = useState<{ telefone: string } | null>(null)
+    const { create: createCliente, loading: savingCliente } = useCreateCliente()
     const { itens: cardapio } = useCardapio({ pageSize: 100 })
     const disponiveis = cardapio.filter((item) => item.disponivel)
     const { create, loading } = useCreatePedido()
@@ -63,8 +67,29 @@ export function ModalPedido({ open, onClose }: ModalPedidoProps) {
 
     function handleClose() {
         reset(DEFAULT_VALUES)
-        setClienteSearch("")
+        setSelectedCliente(null)
+        setNovoCliente(null)
         onClose()
+    }
+
+    function selectCliente(cliente: Cliente | null) {
+        setSelectedCliente(cliente)
+        setValue("clienteId", cliente ? String(cliente.id) : "", { shouldValidate: cliente !== null })
+    }
+
+    function startNovoCliente(search: string) {
+        const digits = search.replace(/\D/g, "")
+        setNovoCliente({ telefone: digits.length >= 10 && digits.length === search.replace(/[\s()-]/g, "").length ? formatPhone(digits) : "" })
+    }
+
+    async function saveNovoCliente(payload: CreateClientePayload) {
+        try {
+            const cliente = await createCliente(payload)
+            selectCliente(cliente)
+            setNovoCliente(null)
+        } catch {
+            // error toast already shown by the hook
+        }
     }
 
     async function onSubmit(data: PedidoFormData) {
@@ -90,32 +115,57 @@ export function ModalPedido({ open, onClose }: ModalPedidoProps) {
             open={open}
             onClose={handleClose}
             footer={
-                <Button
-                    label={loading ? "Registrando..." : `Registrar pedido · ${formatCents(Math.max(totals.totalCents, 0))}`}
-                    className="w-full"
-                    type="submit"
-                    form="form-pedido"
-                    disabled={loading || totalNegativo}
-                />
+                novoCliente ? (
+                    <div className="flex gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setNovoCliente(null)}
+                            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-card px-4 py-2 text-sm font-medium transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                            <ArrowLeft className="size-4" aria-hidden="true" /> Voltar ao pedido
+                        </button>
+                        <Button
+                            label={savingCliente ? "Salvando..." : "Salvar cliente e continuar"}
+                            className="flex-1"
+                            type="submit"
+                            form="form-novo-cliente-pedido"
+                            disabled={savingCliente}
+                        />
+                    </div>
+                ) : (
+                    <Button
+                        label={loading ? "Registrando..." : `Registrar pedido · ${formatCents(Math.max(totals.totalCents, 0))}`}
+                        className="w-full"
+                        type="submit"
+                        form="form-pedido"
+                        disabled={loading || totalNegativo}
+                    />
+                )
             }
         >
-            <form id="form-pedido" onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
-                <fieldset className="flex flex-col gap-3">
-                    <legend className="mb-1 text-sm font-semibold">Cliente</legend>
-                    <FormField label="Buscar cliente" hint="Filtra a lista abaixo por nome ou telefone.">
-                        <Input type="search" value={clienteSearch} onChange={(e) => setClienteSearch(e.target.value)} placeholder="Nome ou telefone..." />
-                    </FormField>
-                    <FormField label="Cliente do pedido" required error={errors.clienteId?.message}>
-                        <Select {...register("clienteId")}>
-                            <option value="">Selecione o cliente</option>
-                            {clientes.map((cliente) => (
-                                <option key={cliente.id} value={cliente.id}>
-                                    {cliente.nome} · {formatPhone(cliente.telefone)}
-                                </option>
-                            ))}
-                        </Select>
-                    </FormField>
-                </fieldset>
+            {novoCliente && (
+                <section aria-labelledby="titulo-novo-cliente" className="flex flex-col gap-3">
+                    <div className="rounded-md bg-accent px-3 py-2 text-sm text-accent-foreground">
+                        <h3 id="titulo-novo-cliente" className="font-semibold">Cadastrar novo cliente</h3>
+                        <p>Os itens do pedido ficam guardados. Ao salvar, o cliente já volta selecionado.</p>
+                    </div>
+                    <ClienteForm
+                        formId="form-novo-cliente-pedido"
+                        initialValues={{ telefone: novoCliente.telefone }}
+                        autoFocus
+                        onSubmit={saveNovoCliente}
+                    />
+                </section>
+            )}
+            <form id="form-pedido" hidden={novoCliente !== null} onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
+                <ClienteSelector
+                    selected={selectedCliente}
+                    tipoEntrega={tipoEntrega}
+                    error={errors.clienteId?.message}
+                    onSelect={selectCliente}
+                    onRequestNew={startNovoCliente}
+                />
+                <input type="hidden" {...register("clienteId")} />
 
                 <fieldset className="flex flex-col gap-2">
                     <legend className="mb-1 text-sm font-semibold">Tipo de entrega <span aria-hidden="true" className="text-primary">*</span></legend>
