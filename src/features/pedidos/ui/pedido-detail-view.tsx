@@ -1,16 +1,25 @@
 "use client"
 
+import { useState } from "react"
+import { Pencil } from "lucide-react"
 import { BackLink } from "@/shared/components/ui/back-link"
 import { Row, Section } from "@/shared/components/ui/section"
+import { Button } from "@/components"
 import { formatCents, formatCurrency, formatDateTime, formatPhone } from "@/shared/lib/format"
 import { formatEndereco } from "@/features/clientes/utils"
+import { PagamentoSection } from "@/features/pagamentos"
 import { usePedido } from "../hooks/use-pedido"
 import { calculatePedidoTotals } from "../totals"
 import { TIPO_ENTREGA_LABELS } from "../types"
 import { StatusBadge } from "./status-badge"
+import { StatusActions } from "./status-actions"
+import { ModalEditarPedido } from "./modal-editar-pedido"
+
+const STATUS_EDITAVEIS = ["CONFIRMADO"]
 
 export function PedidoDetailView({ id }: { id: number }) {
     const { pedido, loading, error } = usePedido(id)
+    const [editando, setEditando] = useState(false)
     const subtotal = pedido ? calculatePedidoTotals(pedido.itens, 0, 0).subtotalCents : 0
 
     return (
@@ -27,8 +36,15 @@ export function PedidoDetailView({ id }: { id: number }) {
                             <h1 className="text-2xl font-semibold tracking-tight">Pedido #{pedido.id}</h1>
                             <p className="mt-0.5 text-sm text-muted-foreground">Registrado em {formatDateTime(pedido.dataPedido)}</p>
                         </div>
-                        <StatusBadge status={pedido.status} className="px-3 py-1 text-sm" />
+                        <div className="flex items-center gap-2">
+                            {STATUS_EDITAVEIS.includes(pedido.status) && (
+                                <Button variant="icon" icon={Pencil} label="Editar pedido" onClick={() => setEditando(true)} />
+                            )}
+                            <StatusBadge status={pedido.status} className="px-3 py-1 text-sm" />
+                        </div>
                     </header>
+
+                    <StatusActions pedido={pedido} />
 
                     <Section title="Cliente">
                         <dl className="flex flex-col gap-3">
@@ -66,10 +82,16 @@ export function PedidoDetailView({ id }: { id: number }) {
                         </dl>
                     </Section>
 
+                    {pedido.status !== "CANCELADO" && <PagamentoSection pedidoId={pedido.id} />}
+
                     {pedido.obs && (
                         <Section title="Observação">
                             <p className="text-sm">{pedido.obs}</p>
                         </Section>
+                    )}
+
+                    {editando && (
+                        <ModalEditarPedido pedido={pedido} open={editando} onClose={() => setEditando(false)} />
                     )}
                 </>
             )}

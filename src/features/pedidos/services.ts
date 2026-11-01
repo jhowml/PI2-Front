@@ -17,6 +17,8 @@ export interface CreatePedidoPayload {
     obs?: string
 }
 
+export type UpdatePedidoPayload = Omit<CreatePedidoPayload, "clienteId">
+
 export function listPedidos(params: ListPedidosParams) {
     return apiClient.get<PaginatedResponse<Pedido>>(ApiRoute.Pedidos, { ...params })
 }
@@ -27,4 +29,12 @@ export function getPedido(id: number) {
 
 export function createPedido(payload: CreatePedidoPayload) {
     return apiClient.post<Pedido>(ApiRoute.Pedidos, payload)
+}
+
+export function updatePedido(id: number, payload: UpdatePedidoPayload) {
+    return apiClient.patch<Pedido>(ApiRoute.Pedidos, id, payload)
+}
+
+export function updatePedidoStatus(id: number, status: Exclude<PedidoStatus, "CONFIRMADO">) {
+    return apiClient.patchAction<Pedido>(ApiRoute.Pedidos, id, "status", { status })
 }

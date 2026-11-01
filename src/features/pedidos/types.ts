@@ -1,14 +1,13 @@
 import type { ItemCardapio } from "@/features/cardapio"
 import type { Cliente } from "@/features/clientes"
 
-export const PEDIDO_STATUSES = ["PENDENTE", "CONFIRMADO", "PREPARANDO", "ENTREGUE", "CANCELADO"] as const
+export const PEDIDO_STATUSES = ["CONFIRMADO", "PREPARANDO", "ENTREGUE", "CANCELADO"] as const
 export type PedidoStatus = (typeof PEDIDO_STATUSES)[number]
 
 export const TIPOS_ENTREGA = ["ENTREGA", "RETIRADA"] as const
 export type TipoEntrega = (typeof TIPOS_ENTREGA)[number]
 
 export const PEDIDO_STATUS_LABELS: Record<PedidoStatus, string> = {
-    PENDENTE: "Pendente",
     CONFIRMADO: "Confirmado",
     PREPARANDO: "Preparando",
     ENTREGUE: "Entregue",
