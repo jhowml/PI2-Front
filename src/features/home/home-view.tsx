@@ -1,6 +1,8 @@
 import Link from "next/link"
-import { ClipboardList, PlusCircle, UtensilsCrossed, Users } from "lucide-react"
+import { BarChart3, ClipboardList, PlusCircle, UtensilsCrossed, Users } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
+import { ResumoDia } from "./resumo-dia"
+import { ResumoSemana } from "./resumo-semana"
 
 type Shortcut = { href: string; title: string; description: string; icon: LucideIcon }
 
@@ -9,6 +11,7 @@ const shortcuts: Shortcut[] = [
     { href: "/pedidos", title: "Pedidos", description: "Acompanhar os pedidos por status.", icon: ClipboardList },
     { href: "/clientes", title: "Clientes", description: "Cadastrar e consultar clientes, com busca de CEP.", icon: Users },
     { href: "/cardapio", title: "Cardápio", description: "Cadastrar itens, preços e disponibilidade.", icon: UtensilsCrossed },
+    { href: "/dashboard", title: "Indicadores", description: "Faturamento, status dos pedidos e itens mais vendidos.", icon: BarChart3 },
 ]
 
 export function HomeView() {
@@ -20,6 +23,8 @@ export function HomeView() {
                     Gestão interna de pedidos, cardápio e clientes, sem taxas de intermediação.
                 </p>
             </header>
+            <ResumoDia />
+            <ResumoSemana />
             <ul className="grid gap-4 sm:grid-cols-2">
                 {shortcuts.map((shortcut) => (
                     <li key={shortcut.href}>
