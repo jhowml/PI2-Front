@@ -20,8 +20,11 @@
   --accent-foreground: #4a3200;
   --destructive: #9f1239;
   --destructive-foreground: #ffffff;
-  --border: #eadccb;
-  --input: #d9c7b3;
+  /* --border e --input foram escurecidos a partir de #eadccb/#d9c7b3: os valores originais
+     mediam 1.3:1 e 1.6:1 contra o fundo, abaixo do mínimo de 3:1 do WCAG 1.4.11 para o
+     contorno de componentes de interface (cards, campos de formulário). */
+  --border: #a58560;
+  --input: #8a6d45;
   --ring: #b91c1c;
   --radius: 0.625rem;
   --sidebar-background: #7f1d1d;
@@ -30,7 +33,8 @@
   --sidebar-primary-foreground: #3b2600;
   --sidebar-accent: #991b1b;
   --sidebar-accent-foreground: #fffaf2;
-  --sidebar-border: #9b2c2c;
+  /* idem: #9b2c2c media 1.33:1 contra --sidebar-background, abaixo do mínimo de 3:1. */
+  --sidebar-border: #d4a373;
   --sidebar-ring: #fbbf24;
   --success: #166534;
   --success-foreground: #ffffff;
