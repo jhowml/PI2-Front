@@ -23,7 +23,7 @@ export enum ApiRoute {
 
 export type QueryParams = Record<string, string | number | undefined>
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000"
+const baseUrl = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000").trim().replace(/\/+$/, "")
 
 function buildMessage(body: { error?: { message?: string; fields?: Record<string, string[]> } } | null, status: number) {
     const message = body?.error?.message ?? `Erro ${status} ao comunicar com a API.`
