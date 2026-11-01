@@ -1,13 +1,14 @@
 import { describe, it, expect, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { axe } from "vitest-axe"
 import { Modal } from "./modal"
 
 function renderModal(onClose = vi.fn()) {
     return render(
         <Modal open title="Exemplo" onClose={onClose}>
-            <input placeholder="Primeiro campo" />
-            <input placeholder="Segundo campo" />
+            <input aria-label="Primeiro campo" placeholder="Primeiro campo" />
+            <input aria-label="Segundo campo" placeholder="Segundo campo" />
         </Modal>,
     )
 }
@@ -46,5 +47,11 @@ describe("Modal", () => {
 
         const second = screen.getByPlaceholderText("Segundo campo")
         expect(document.activeElement).toBe(second)
+    })
+
+    it("should have no axe violations while open", async () => {
+        const { container } = renderModal()
+
+        expect(await axe(container)).toHaveNoViolations()
     })
 })

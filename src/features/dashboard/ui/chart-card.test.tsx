@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { axe } from "vitest-axe"
 import { ChartCard } from "./chart-card"
 
 describe("ChartCard", () => {
@@ -46,5 +47,29 @@ describe("ChartCard", () => {
 
         expect(screen.queryByRole("img")).not.toBeInTheDocument()
         expect(screen.getByRole("region", { name: "faturamento diário" })).toBeInTheDocument()
+    })
+
+    it("should have no axe violations in either the chart or the table view", async () => {
+        const { container } = render(
+            <ChartCard
+                title="Pedidos por status"
+                summary="3 pedidos confirmados, 1 em preparo"
+                chart={<div>barras</div>}
+                table={
+                    <table>
+                        <caption>Tabela de pedidos por status</caption>
+                        <tbody>
+                            <tr><th scope="row">Confirmado</th><td>3</td></tr>
+                        </tbody>
+                    </table>
+                }
+            />,
+        )
+
+        expect(await axe(container)).toHaveNoViolations()
+
+        await userEvent.click(screen.getByRole("button", { name: "Ver como tabela" }))
+
+        expect(await axe(container)).toHaveNoViolations()
     })
 })

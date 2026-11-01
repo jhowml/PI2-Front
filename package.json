@@ -37,7 +37,8 @@
     "jsdom": "^29.1.1",
     "tailwindcss": "^4",
     "typescript": "^5",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "vitest-axe": "^0.1.0"
   },
   "description": "Painel web de gestão interna de pedidos, cardápio e clientes (Projeto Integrador II - UNIVESP)",
   "engines": {

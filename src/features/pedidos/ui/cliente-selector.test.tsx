@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import { axe } from "vitest-axe"
 import { ClienteSelector } from "./cliente-selector"
 import type { Cliente } from "@/features/clientes"
 
@@ -27,10 +28,10 @@ vi.mock("@/features/clientes/hooks/use-clientes", () => ({
 
 function renderSelector() {
     const onSelect = vi.fn()
-    render(
+    const result = render(
         <ClienteSelector selected={null} tipoEntrega="RETIRADA" onSelect={onSelect} onRequestNew={vi.fn()} />,
     )
-    return { onSelect }
+    return { onSelect, container: result.container }
 }
 
 describe("ClienteSelector (combobox)", () => {
@@ -84,5 +85,12 @@ describe("ClienteSelector (combobox)", () => {
         expect(combobox).toHaveAttribute("aria-expanded", "false")
         expect(screen.queryByRole("listbox")).not.toBeInTheDocument()
         expect(combobox).toHaveValue("13")
+    })
+
+    it("should have no axe violations with the listbox open", async () => {
+        const { container } = renderSelector()
+        await userEvent.type(screen.getByRole("combobox"), "13")
+
+        expect(await axe(container)).toHaveNoViolations()
     })
 })
