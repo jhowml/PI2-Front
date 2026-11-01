@@ -23,3 +23,7 @@ export function listCardapio(params: ListCardapioParams) {
 export function createItemCardapio(payload: CreateItemCardapioPayload) {
     return apiClient.post<ItemCardapio>(ApiRoute.Cardapio, payload)
 }
+
+export function updateItemCardapio(id: number, payload: CreateItemCardapioPayload) {
+    return apiClient.patch<ItemCardapio>(ApiRoute.Cardapio, id, payload)
+}

@@ -1,8 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { Plus } from "lucide-react"
-import { CardList, ListPageLayout } from "@/components"
+import { Pencil, Plus } from "lucide-react"
+import { Button, CardList, ListPageLayout } from "@/components"
 import { FormField } from "@/shared/components/ui/form-field"
 import { Input } from "@/shared/components/ui/input"
 import { Pagination } from "@/shared/components/ui/pagination"
@@ -12,7 +12,7 @@ import { useCardapio } from "../hooks/use-cardapio"
 import type { ItemCardapio } from "../types"
 import { ModalItemCardapio } from "./modal-item-cardapio"
 
-function ItemCardapioRow({ item }: { item: ItemCardapio }) {
+function ItemCardapioRow({ item, onEdit }: { item: ItemCardapio; onEdit: (item: ItemCardapio) => void }) {
     return (
         <div className="flex w-full items-start gap-4 bg-card px-4 py-4 md:px-6">
             <div className="flex min-w-0 flex-1 flex-col">
@@ -28,12 +28,14 @@ function ItemCardapioRow({ item }: { item: ItemCardapio }) {
                     <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">Indisponível</span>
                 )}
             </div>
+            <Button variant="icon" icon={Pencil} label={`Editar ${item.nome}`} onClick={() => onEdit(item)} />
         </div>
     )
 }
 
 export function CardapioView() {
     const [modalOpen, setModalOpen] = useState(false)
+    const [editingItem, setEditingItem] = useState<ItemCardapio | null>(null)
     const [search, setSearch] = useState("")
     const [page, setPage] = useState(1)
     const debouncedSearch = useDebounce(search)
@@ -42,6 +44,9 @@ export function CardapioView() {
     return (
         <>
             <ModalItemCardapio open={modalOpen} onClose={() => setModalOpen(false)} />
+            {editingItem && (
+                <ModalItemCardapio key={editingItem.id} open item={editingItem} onClose={() => setEditingItem(null)} />
+            )}
             <ListPageLayout
                 title="Cardápio"
                 description="Itens vendidos pelo estabelecimento. Itens indisponíveis não podem ser adicionados a pedidos."
@@ -66,7 +71,7 @@ export function CardapioView() {
                             {loading ? "Carregando..." : error ?? "Nenhum item encontrado"}
                         </p>
                     }
-                    renderItem={(item) => <ItemCardapioRow item={item} />}
+                    renderItem={(item) => <ItemCardapioRow item={item} onEdit={setEditingItem} />}
                 />
                 <Pagination meta={meta} onPageChange={setPage} />
             </ListPageLayout>

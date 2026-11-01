@@ -32,3 +32,7 @@ export function getCliente(id: number) {
 export function createCliente(payload: CreateClientePayload) {
     return apiClient.post<Cliente>(ApiRoute.Clientes, payload)
 }
+
+export function updateCliente(id: number, payload: CreateClientePayload) {
+    return apiClient.patch<Cliente>(ApiRoute.Clientes, id, payload)
+}

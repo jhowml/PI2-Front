@@ -1,12 +1,17 @@
 "use client"
 
+import { useState } from "react"
+import { Pencil } from "lucide-react"
 import { BackLink } from "@/shared/components/ui/back-link"
 import { Row, Section } from "@/shared/components/ui/section"
+import { Button } from "@/components"
 import { formatCep, formatDateTime, formatPhone } from "@/shared/lib/format"
 import { useCliente } from "../hooks/use-cliente"
+import { ModalCliente } from "./modal-cliente"
 
 export function ClienteDetailView({ id }: { id: number }) {
     const { cliente, loading, error } = useCliente(id)
+    const [editando, setEditando] = useState(false)
 
     return (
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-8">
@@ -17,9 +22,12 @@ export function ClienteDetailView({ id }: { id: number }) {
 
             {cliente && (
                 <>
-                    <header>
-                        <h1 className="text-2xl font-semibold tracking-tight">{cliente.nome}</h1>
-                        <p className="mt-0.5 text-sm text-muted-foreground">Cliente desde {formatDateTime(cliente.createdAt)}</p>
+                    <header className="flex flex-wrap items-center justify-between gap-4">
+                        <div>
+                            <h1 className="text-2xl font-semibold tracking-tight">{cliente.nome}</h1>
+                            <p className="mt-0.5 text-sm text-muted-foreground">Cliente desde {formatDateTime(cliente.createdAt)}</p>
+                        </div>
+                        <Button variant="icon" icon={Pencil} label="Editar cliente" onClick={() => setEditando(true)} />
                     </header>
 
                     <Section title="Contato">
@@ -42,6 +50,10 @@ export function ClienteDetailView({ id }: { id: number }) {
                             <p className="text-sm text-muted-foreground">Sem endereço cadastrado (cliente de retirada).</p>
                         )}
                     </Section>
+
+                    {editando && (
+                        <ModalCliente open={editando} cliente={cliente} onClose={() => setEditando(false)} />
+                    )}
                 </>
             )}
         </div>
