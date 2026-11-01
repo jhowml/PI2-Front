@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ChevronRight, Plus } from "lucide-react"
 import { CardList, ListPageLayout } from "@/components"
@@ -8,6 +8,7 @@ import { FormField } from "@/shared/components/ui/form-field"
 import { Select } from "@/shared/components/ui/input"
 import { Pagination } from "@/shared/components/ui/pagination"
 import { formatCurrency, formatDateTime } from "@/shared/lib/format"
+import { NOVO_PEDIDO_EVENT } from "@/shared/keyboard-shortcuts"
 import { usePedidos } from "../hooks/use-pedidos"
 import { PEDIDO_STATUSES, PEDIDO_STATUS_LABELS, TIPO_ENTREGA_LABELS, type PedidoStatus } from "../types"
 import { ModalPedido } from "./modal-pedido"
@@ -19,13 +20,27 @@ export function PedidosView({ openNew = false }: { openNew?: boolean }) {
     const [page, setPage] = useState(1)
     const { pedidos, meta, loading, error } = usePedidos({ page, status: status || undefined })
 
+    useEffect(() => {
+        function handleShortcut() {
+            setModalOpen(true)
+        }
+        window.addEventListener(NOVO_PEDIDO_EVENT, handleShortcut)
+        return () => window.removeEventListener(NOVO_PEDIDO_EVENT, handleShortcut)
+    }, [])
+
     return (
         <>
             <ModalPedido open={modalOpen} onClose={() => setModalOpen(false)} />
             <ListPageLayout
                 title="Pedidos"
                 description="Pedidos mais recentes primeiro. Clique em um pedido para ver os detalhes."
-                headerAction={{ label: "Novo pedido", icon: Plus, onClick: () => setModalOpen(true) }}
+                headerAction={{
+                    label: "Novo pedido",
+                    icon: Plus,
+                    onClick: () => setModalOpen(true),
+                    title: "Novo pedido (N)",
+                    "aria-keyshortcuts": "n",
+                }}
             >
                 <div className="sm:w-60">
                     <FormField label="Filtrar por status">

@@ -9,7 +9,9 @@ export type ListPageLayoutProps = {
   headerAction?: {
     icon: LucideIcon,
     onClick: () => void,
-    label: string
+    label: string,
+    title?: string,
+    "aria-keyshortcuts"?: string,
   };
   children: ReactNode;
 };
@@ -34,7 +36,15 @@ export function ListPageLayout({
         {headerAction != null ? (
           <>
             <FloatingActionButton className="md:hidden" icon={headerAction.icon} label={headerAction.label} onClick={headerAction.onClick} />
-            <div className="hidden md:flex flex-1 justify-end py-2">{<Button label={headerAction.label} icon={headerAction.icon} onClick={headerAction.onClick} />}</div>
+            <div className="hidden md:flex flex-1 justify-end py-2">
+              <Button
+                label={headerAction.label}
+                icon={headerAction.icon}
+                onClick={headerAction.onClick}
+                title={headerAction.title}
+                aria-keyshortcuts={headerAction["aria-keyshortcuts"]}
+              />
+            </div>
           </>
         ) : null}
       </div>

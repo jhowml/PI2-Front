@@ -33,6 +33,8 @@ export function ClientesView() {
                         type="search"
                         placeholder="Buscar por telefone, endereço ou nome..."
                         value={search}
+                        aria-keyshortcuts="/"
+                        title="Buscar clientes (/)"
                         onChange={(e) => {
                             setSearch(e.target.value)
                             setPage(1)

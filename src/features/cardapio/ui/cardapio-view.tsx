@@ -57,6 +57,8 @@ export function CardapioView() {
                         type="search"
                         placeholder="Buscar por nome..."
                         value={search}
+                        aria-keyshortcuts="/"
+                        title="Buscar no cardápio (/)"
                         onChange={(e) => {
                             setSearch(e.target.value)
                             setPage(1)

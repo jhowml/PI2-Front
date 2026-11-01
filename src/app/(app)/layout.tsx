@@ -1,5 +1,6 @@
 import { AppShell } from "@/shared";
 import { AuthGuard } from "@/shared/components/auth-guard";
+import { KeyboardShortcutsProvider } from "@/shared/keyboard-shortcuts";
 
 export default function AppLayout({
   children,
@@ -8,7 +9,9 @@ export default function AppLayout({
 }>) {
   return (
     <AuthGuard>
-      <AppShell>{children}</AppShell>
+      <KeyboardShortcutsProvider>
+        <AppShell>{children}</AppShell>
+      </KeyboardShortcutsProvider>
     </AuthGuard>
   );
 }

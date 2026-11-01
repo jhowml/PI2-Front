@@ -1,6 +1,7 @@
 import { SidebarBrand } from "./sidebar-brand";
 import { SidebarNav } from "./sidebar-nav";
 import { LogoutButton } from "./logout-button";
+import { ShortcutsHelpLink } from "./shortcuts-help-link";
 
 export function AppSidebar() {
   return (
@@ -12,7 +13,8 @@ export function AppSidebar() {
         <SidebarBrand />
       </div>
       <SidebarNav />
-      <div className="mt-auto">
+      <div className="mt-auto flex flex-col gap-0.5">
+        <ShortcutsHelpLink />
         <LogoutButton />
       </div>
     </aside>
