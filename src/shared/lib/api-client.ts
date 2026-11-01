@@ -16,7 +16,9 @@ export enum ApiRoute {
     Cardapio = "/api/cardapio",
     Clientes = "/api/clientes",
     Pedidos = "/api/pedidos",
+    Pagamentos = "/api/pagamentos",
     Cep = "/api/cep",
+    Dashboard = "/api/dashboard",
 }
 
 export type QueryParams = Record<string, string | number | undefined>
@@ -73,4 +75,10 @@ export const apiClient = {
 
     post: <T>(route: ApiRoute, body: unknown) =>
         request<T>(route, { method: "POST", body: JSON.stringify(body) }),
+
+    patch: <T>(route: ApiRoute, id: number | string, body: unknown) =>
+        request<T>(`${route}/${encodeURIComponent(String(id))}`, { method: "PATCH", body: JSON.stringify(body) }),
+
+    patchAction: <T>(route: ApiRoute, id: number | string, action: string, body: unknown) =>
+        request<T>(`${route}/${encodeURIComponent(String(id))}/${action}`, { method: "PATCH", body: JSON.stringify(body) }),
 }
