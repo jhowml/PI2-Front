@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
 import { MapPin, Phone, UserPlus } from "lucide-react"
 import { FormField } from "@/shared/components/ui/form-field"
 import { Input } from "@/shared/components/ui/input"
@@ -39,12 +39,58 @@ function ClienteSummary({ cliente }: { cliente: Cliente }) {
 }
 
 export function ClienteSelector({ selected, tipoEntrega, error, onSelect, onRequestNew }: ClienteSelectorProps) {
+    const listboxId = useId()
     const [search, setSearch] = useState("")
+    const [dismissed, setDismissed] = useState(false)
+    const [activeIndex, setActiveIndex] = useState(-1)
+    const [resultsKey, setResultsKey] = useState("")
     const debouncedSearch = useDebounce(search.trim())
     const canSearch = debouncedSearch.length >= MIN_SEARCH_LENGTH
     const { clientes, loading: fetching, stale } = useClientes({ pageSize: 8, search: canSearch ? debouncedSearch : undefined })
     const loading = fetching || stale || search.trim() !== debouncedSearch
     const results = canSearch && !loading ? clientes : []
+    const open = canSearch && !dismissed && results.length > 0
+
+    const currentResultsKey = `${debouncedSearch}:${results.length}`
+    if (currentResultsKey !== resultsKey) {
+        setResultsKey(currentResultsKey)
+        setActiveIndex(-1)
+    }
+
+    function optionId(clienteId: number) {
+        return `${listboxId}-option-${clienteId}`
+    }
+
+    function selectCliente(cliente: Cliente) {
+        setActiveIndex(-1)
+        onSelect(cliente)
+    }
+
+    function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+        if (event.key === "ArrowDown") {
+            event.preventDefault()
+            setDismissed(false)
+            if (results.length === 0) return
+            setActiveIndex((index) => (index + 1) % results.length)
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault()
+            setDismissed(false)
+            if (results.length === 0) return
+            setActiveIndex((index) => (index <= 0 ? results.length - 1 : index - 1))
+        } else if (event.key === "Enter") {
+            if (open && activeIndex >= 0 && results[activeIndex]) {
+                event.preventDefault()
+                selectCliente(results[activeIndex])
+            }
+        } else if (event.key === "Escape") {
+            if (open) {
+                event.preventDefault()
+                event.stopPropagation()
+                setDismissed(true)
+                setActiveIndex(-1)
+            }
+        }
+    }
 
     if (selected) {
         return (
@@ -81,34 +127,47 @@ export function ClienteSelector({ selected, tipoEntrega, error, onSelect, onRequ
             >
                 <Input
                     type="search"
+                    role="combobox"
+                    aria-expanded={open}
+                    aria-controls={listboxId}
+                    aria-autocomplete="list"
+                    aria-activedescendant={open && activeIndex >= 0 ? optionId(results[activeIndex].id) : undefined}
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e) => {
+                        setSearch(e.target.value)
+                        setDismissed(false)
+                    }}
+                    onKeyDown={handleKeyDown}
                     placeholder="Telefone, rua, número ou bairro..."
                     autoComplete="off"
                 />
             </FormField>
 
-            {canSearch && (
+            {canSearch && !dismissed && (
                 <div aria-live="polite" className="flex flex-col gap-2">
                     {loading && <p className="text-sm text-muted-foreground">Buscando clientes...</p>}
                     {!loading && results.length === 0 && (
                         <p className="text-sm text-muted-foreground">Nenhum cliente encontrado para “{debouncedSearch}”.</p>
                     )}
                     {results.length > 0 && (
-                        <ul className="flex flex-col gap-2" aria-label="Clientes encontrados">
-                            {results.map((cliente) => (
-                                <li key={cliente.id}>
-                                    <button
-                                        type="button"
-                                        onClick={() => onSelect(cliente)}
-                                        className={cn(
-                                            "flex w-full rounded-lg border border-border bg-card p-3 transition-colors hover:border-primary hover:bg-accent",
-                                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                                        )}
-                                    >
-                                        <span className="sr-only">Selecionar cliente: </span>
-                                        <ClienteSummary cliente={cliente} />
-                                    </button>
+                        <ul id={listboxId} role="listbox" className="flex flex-col gap-2" aria-label="Clientes encontrados">
+                            {results.map((cliente, index) => (
+                                <li
+                                    key={cliente.id}
+                                    id={optionId(cliente.id)}
+                                    role="option"
+                                    aria-selected={index === activeIndex}
+                                    tabIndex={-1}
+                                    onMouseDown={(e) => e.preventDefault()}
+                                    onMouseEnter={() => setActiveIndex(index)}
+                                    onClick={() => selectCliente(cliente)}
+                                    className={cn(
+                                        "flex w-full cursor-pointer rounded-lg border border-border bg-card p-3 transition-colors hover:border-primary hover:bg-accent",
+                                        index === activeIndex && "border-primary bg-accent",
+                                    )}
+                                >
+                                    <span className="sr-only">Selecionar cliente: </span>
+                                    <ClienteSummary cliente={cliente} />
                                 </li>
                             ))}
                         </ul>
