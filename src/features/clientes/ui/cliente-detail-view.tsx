@@ -6,12 +6,14 @@ import { BackLink } from "@/shared/components/ui/back-link"
 import { Row, Section } from "@/shared/components/ui/section"
 import { Button } from "@/components"
 import { formatCep, formatDateTime, formatPhone } from "@/shared/lib/format"
+import { useDocumentTitle } from "@/shared/hooks/use-document-title"
 import { useCliente } from "../hooks/use-cliente"
 import { ModalCliente } from "./modal-cliente"
 
 export function ClienteDetailView({ id }: { id: number }) {
     const { cliente, loading, error } = useCliente(id)
     const [editando, setEditando] = useState(false)
+    useDocumentTitle(cliente?.nome)
 
     return (
         <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-8">

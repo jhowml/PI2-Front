@@ -6,6 +6,7 @@ import { BackLink } from "@/shared/components/ui/back-link"
 import { Row, Section } from "@/shared/components/ui/section"
 import { Button } from "@/components"
 import { formatCents, formatCurrency, formatDateTime, formatPhone } from "@/shared/lib/format"
+import { useDocumentTitle } from "@/shared/hooks/use-document-title"
 import { formatEndereco } from "@/features/clientes/utils"
 import { PagamentoSection, usePagamento } from "@/features/pagamentos"
 import { usePedido } from "../hooks/use-pedido"
@@ -22,6 +23,7 @@ export function PedidoDetailView({ id }: { id: number }) {
     const { pagamento } = usePagamento(pedido?.id ?? 0)
     const pagamentoPago = pagamento?.status === "PAGO"
     const [editando, setEditando] = useState(false)
+    useDocumentTitle(pedido ? `Pedido #${pedido.id}` : undefined)
     const subtotal = pedido ? calculatePedidoTotals(pedido.itens, 0, 0).subtotalCents : 0
 
     return (

@@ -11,7 +11,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Soberania Digital",
+  title: { default: "Soberania Digital", template: "%s · Soberania Digital" },
   description: "Gestão interna de pedidos, cardápio e clientes",
 };
 

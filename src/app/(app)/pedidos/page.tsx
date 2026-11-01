@@ -1,4 +1,7 @@
+import type { Metadata } from "next"
 import { PedidosView } from "@/features/pedidos"
+
+export const metadata: Metadata = { title: "Pedidos" }
 
 interface Props {
     searchParams: Promise<{ novo?: string }>

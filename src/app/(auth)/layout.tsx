@@ -1,3 +1,7 @@
+import type { Metadata } from "next"
+
+export const metadata: Metadata = { title: "Entrar" }
+
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
     return (
         <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-sidebar-background via-primary to-sidebar-background p-4">
