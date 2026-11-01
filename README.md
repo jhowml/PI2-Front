@@ -92,6 +92,9 @@ Edição e exclusão de pedidos, clientes e itens do cardápio; alteração de s
 - Todo campo tem `label` associado; erros de validação são ligados ao campo (`aria-describedby`, `aria-invalid`) e anunciados (`role="alert"`).
 - Modais com `role="dialog"`, título associado, fechamento por **Esc**, foco no primeiro campo e devolução do foco ao fechar.
 - Status de pedido indicados por **texto**, não só por cor; foco visível em todos os elementos interativos; animações reduzidas com `prefers-reduced-motion`.
+- Trap de foco em todos os modais; `ClienteSelector` como combobox ARIA 1.2 (setas, Enter, Esc); sistema de atalhos de teclado (`N`, `/`, `G`+letra, `?`, `Ctrl+Enter`), desativável e persistido em `localStorage`.
+- Gráficos do painel de indicadores com `role="img"`/`role="region"` + resumo textual e alternativa em tabela ("Ver como tabela").
+- Detalhes, tabela de contraste medida e testes de axe-core em [`docs/ACESSIBILIDADE.md`](docs/ACESSIBILIDADE.md).
 
 ## Arquitetura
 
