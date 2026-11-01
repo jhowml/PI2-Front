@@ -2,7 +2,7 @@
 
 import { Modal } from "@/shared/components/ui/modal"
 import { Button } from "@/components"
-import { formatCep } from "@/shared/lib/format"
+import { formatCep, formatPhone } from "@/shared/lib/format"
 import { useCreateCliente } from "../hooks/use-create-cliente"
 import { useUpdateCliente } from "../hooks/use-update-cliente"
 import type { CreateClientePayload } from "../services"
@@ -19,7 +19,7 @@ interface ModalClienteProps {
 function toInitialValues(cliente: Cliente): Partial<ClienteFormInput> {
     return {
         nome: cliente.nome,
-        telefone: cliente.telefone,
+        telefone: formatPhone(cliente.telefone),
         obs: cliente.obs ?? "",
         cep: cliente.cep ? formatCep(cliente.cep) : "",
         logradouro: cliente.logradouro ?? "",

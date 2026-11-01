@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { isValidMoney, moneyToCents, moneyToNumber } from "./money"
+import { isValidMoney, moneyToCents, moneyToNumber, toMoneyInput } from "./money"
 
 describe("isValidMoney", () => {
     it.each(["0", "12", "12,5", "12,50", "12.50", "99999999,99"])("accepts %s", (value) => {
@@ -32,5 +32,14 @@ describe("moneyToNumber", () => {
     it("returns the number sent to the API", () => {
         expect(moneyToNumber("5,00")).toBe(5)
         expect(moneyToNumber("2,25")).toBe(2.25)
+    })
+})
+
+describe("toMoneyInput", () => {
+    it("formats API decimal strings as pt-BR comma money, always 2 decimals", () => {
+        expect(toMoneyInput("69.9")).toBe("69,90")
+        expect(toMoneyInput("0")).toBe("0,00")
+        expect(toMoneyInput("8.00")).toBe("8,00")
+        expect(toMoneyInput(34.9)).toBe("34,90")
     })
 })

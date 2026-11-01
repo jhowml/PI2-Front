@@ -19,3 +19,13 @@ export function centsToNumber(cents: number) {
 export function moneyToNumber(value: string) {
     return centsToNumber(moneyToCents(value))
 }
+
+// Converts an API decimal (e.g. "69.9", "0", 34.9) into the pt-BR comma format
+// money inputs expect on screen (e.g. "69,90", "0,00"), so editing a form never
+// shows the raw API value.
+export function toMoneyInput(value: string | number) {
+    const cents = moneyToCents(value)
+    const reais = Math.floor(cents / 100)
+    const centavos = String(cents % 100).padStart(2, "0")
+    return `${reais},${centavos}`
+}

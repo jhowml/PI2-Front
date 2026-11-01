@@ -7,7 +7,7 @@ import { Row, Section } from "@/shared/components/ui/section"
 import { Button } from "@/components"
 import { formatCents, formatCurrency, formatDateTime, formatPhone } from "@/shared/lib/format"
 import { formatEndereco } from "@/features/clientes/utils"
-import { PagamentoSection } from "@/features/pagamentos"
+import { PagamentoSection, usePagamento } from "@/features/pagamentos"
 import { usePedido } from "../hooks/use-pedido"
 import { calculatePedidoTotals } from "../totals"
 import { TIPO_ENTREGA_LABELS } from "../types"
@@ -19,6 +19,8 @@ const STATUS_EDITAVEIS = ["CONFIRMADO"]
 
 export function PedidoDetailView({ id }: { id: number }) {
     const { pedido, loading, error } = usePedido(id)
+    const { pagamento } = usePagamento(pedido?.id ?? 0)
+    const pagamentoPago = pagamento?.status === "PAGO"
     const [editando, setEditando] = useState(false)
     const subtotal = pedido ? calculatePedidoTotals(pedido.itens, 0, 0).subtotalCents : 0
 
@@ -38,13 +40,25 @@ export function PedidoDetailView({ id }: { id: number }) {
                         </div>
                         <div className="flex items-center gap-2">
                             {STATUS_EDITAVEIS.includes(pedido.status) && (
-                                <Button variant="icon" icon={Pencil} label="Editar pedido" onClick={() => setEditando(true)} />
+                                <Button
+                                    variant="icon"
+                                    icon={Pencil}
+                                    label={`Editar pedido #${pedido.id}`}
+                                    title={pagamentoPago ? "Estorne o pagamento antes de editar o pedido." : undefined}
+                                    disabled={pagamentoPago}
+                                    onClick={() => setEditando(true)}
+                                />
                             )}
                             <StatusBadge status={pedido.status} className="px-3 py-1 text-sm" />
                         </div>
                     </header>
+                    {STATUS_EDITAVEIS.includes(pedido.status) && pagamentoPago && (
+                        <p className="-mt-4 text-xs text-muted-foreground" role="note">
+                            Pagamento já recebido — estorne-o na seção &quot;Pagamento&quot; abaixo para poder editar o pedido.
+                        </p>
+                    )}
 
-                    <StatusActions pedido={pedido} />
+                    <StatusActions pedido={pedido} pagamentoPago={pagamentoPago} />
 
                     <Section title="Cliente">
                         <dl className="flex flex-col gap-3">

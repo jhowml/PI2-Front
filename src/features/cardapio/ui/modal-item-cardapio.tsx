@@ -7,7 +7,7 @@ import { Modal } from "@/shared/components/ui/modal"
 import { FormField } from "@/shared/components/ui/form-field"
 import { Input, TextArea } from "@/shared/components/ui/input"
 import { Button } from "@/components"
-import { moneyToNumber } from "@/shared/lib/money"
+import { moneyToNumber, toMoneyInput } from "@/shared/lib/money"
 import { useCreateItemCardapio } from "../hooks/use-create-item-cardapio"
 import { useUpdateItemCardapio } from "../hooks/use-update-item-cardapio"
 import { itemCardapioSchema, ItemCardapioFormData } from "../schema"
@@ -21,7 +21,7 @@ function toFormValues(item: ItemCardapio): ItemCardapioFormData {
     return {
         nome: item.nome,
         descricao: item.descricao ?? "",
-        preco: item.preco,
+        preco: toMoneyInput(item.preco),
         categoria: item.categoria,
         disponivel: item.disponivel,
     }

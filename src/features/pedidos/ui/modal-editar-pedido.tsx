@@ -8,7 +8,7 @@ import { FormField } from "@/shared/components/ui/form-field"
 import { Input, Select, TextArea } from "@/shared/components/ui/input"
 import { Button } from "@/components"
 import { formatCents, formatCurrency } from "@/shared/lib/format"
-import { moneyToNumber } from "@/shared/lib/money"
+import { moneyToNumber, toMoneyInput } from "@/shared/lib/money"
 import { cn } from "@/shared/lib/cn"
 import { useCardapio } from "@/features/cardapio/hooks/use-cardapio"
 import { useUpdatePedido } from "../hooks/use-update-pedido"
@@ -19,8 +19,8 @@ import { TIPO_ENTREGA_LABELS, TIPOS_ENTREGA, type Pedido } from "../types"
 function toFormValues(pedido: Pedido): EditarPedidoFormData {
     return {
         tipoEntrega: pedido.tipoEntrega,
-        taxaEntrega: pedido.taxaEntrega,
-        desconto: pedido.desconto,
+        taxaEntrega: pedido.tipoEntrega === "RETIRADA" ? "" : toMoneyInput(pedido.taxaEntrega),
+        desconto: toMoneyInput(pedido.desconto),
         obs: pedido.obs ?? "",
         itens: pedido.itens.map((item) => ({ cardapioId: String(item.cardapioId), quantidade: item.quantidade })),
     }
