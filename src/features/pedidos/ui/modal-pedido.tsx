@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { ArrowLeft } from "lucide-react"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -38,6 +38,7 @@ interface ModalPedidoProps {
 }
 
 export function ModalPedido({ open, onClose }: ModalPedidoProps) {
+    const clienteSearchRef = useRef<HTMLInputElement>(null)
     const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null)
     const [novoCliente, setNovoCliente] = useState<{ telefone: string } | null>(null)
     const { create: createCliente, loading: savingCliente } = useCreateCliente()
@@ -109,6 +110,14 @@ export function ModalPedido({ open, onClose }: ModalPedidoProps) {
         }
     }
 
+    function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
+        // clienteId é um input hidden (não focável); o foco do RHF cai nele e não vai a lugar
+        // nenhum, então aqui mandamos explicitamente para o campo de busca visível.
+        handleSubmit(onSubmit, (formErrors) => {
+            if (formErrors.clienteId) clienteSearchRef.current?.focus()
+        })(event)
+    }
+
     return (
         <Modal
             title="Novo pedido"
@@ -157,8 +166,9 @@ export function ModalPedido({ open, onClose }: ModalPedidoProps) {
                     />
                 </section>
             )}
-            <form id="form-pedido" hidden={novoCliente !== null} onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
+            <form id="form-pedido" hidden={novoCliente !== null} onSubmit={handleFormSubmit} noValidate className="flex flex-col gap-5">
                 <ClienteSelector
+                    ref={clienteSearchRef}
                     selected={selectedCliente}
                     tipoEntrega={tipoEntrega}
                     error={errors.clienteId?.message}

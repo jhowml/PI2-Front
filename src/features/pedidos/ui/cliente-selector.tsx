@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState } from "react"
+import { forwardRef, useId, useState } from "react"
 import { MapPin, Phone, UserPlus } from "lucide-react"
 import { FormField } from "@/shared/components/ui/form-field"
 import { Input } from "@/shared/components/ui/input"
@@ -38,7 +38,15 @@ function ClienteSummary({ cliente }: { cliente: Cliente }) {
     )
 }
 
-export function ClienteSelector({ selected, tipoEntrega, error, onSelect, onRequestNew }: ClienteSelectorProps) {
+/**
+ * O ref aponta para o campo de busca visível. clienteId é registrado no formulário como um
+ * input hidden (não focável) — quando essa validação falha, o foco deve ir para este campo,
+ * não para o hidden input, por isso o componente expõe o ref em vez de só o id.
+ */
+export const ClienteSelector = forwardRef<HTMLInputElement, ClienteSelectorProps>(function ClienteSelector(
+    { selected, tipoEntrega, error, onSelect, onRequestNew },
+    ref,
+) {
     const listboxId = useId()
     const [search, setSearch] = useState("")
     const [dismissed, setDismissed] = useState(false)
@@ -126,6 +134,7 @@ export function ClienteSelector({ selected, tipoEntrega, error, onSelect, onRequ
                 hint="Ex.: 13 99123, dom pedro 350, enseada. Também encontra pelo nome."
             >
                 <Input
+                    ref={ref}
                     type="search"
                     role="combobox"
                     aria-expanded={open}
@@ -190,4 +199,4 @@ export function ClienteSelector({ selected, tipoEntrega, error, onSelect, onRequ
             </button>
         </fieldset>
     )
-}
+})
