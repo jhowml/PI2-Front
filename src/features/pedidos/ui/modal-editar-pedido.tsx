@@ -130,12 +130,26 @@ export function ModalEditarPedido({ pedido, open, onClose }: ModalEditarPedidoPr
                     <legend className="mb-1 text-sm font-semibold">Itens <span aria-hidden="true" className="text-primary">*</span></legend>
                     {errors.itens?.root?.message && <p role="alert" className="text-xs font-medium text-destructive">{errors.itens.root.message}</p>}
                     {errors.itens?.message && <p role="alert" className="text-xs font-medium text-destructive">{errors.itens.message}</p>}
-                    {fields.map((field, index) => (
+                    {fields.map((field, index) => {
+                        const currentCardapioId = itensForm?.[index]?.cardapioId
+                        const original = pedido.itens[index]
+                        const isOriginalSelection = original != null && String(original.cardapioId) === currentCardapioId
+                        const selectedAindaDisponivel = disponiveis.some((item) => String(item.id) === currentCardapioId)
+                        // Um item do pedido pode ter ficado indisponível depois da venda; sem isto, o
+                        // <select> não acha a option e mostra "Selecione um item" mesmo com o valor certo.
+                        const itemIndisponivelSelecionado = isOriginalSelection && !selectedAindaDisponivel ? original.cardapio : null
+
+                        return (
                         <div key={field.id} className="flex items-start gap-2">
                             <div className="flex-1">
                                 <FormField label={`Item ${index + 1}`} hideLabel error={errors.itens?.[index]?.cardapioId?.message}>
                                     <Select {...register(`itens.${index}.cardapioId`)}>
                                         <option value="">Selecione um item do cardápio</option>
+                                        {itemIndisponivelSelecionado && (
+                                            <option value={itemIndisponivelSelecionado.id}>
+                                                {itemIndisponivelSelecionado.nome} · {formatCurrency(itemIndisponivelSelecionado.preco)} (indisponível)
+                                            </option>
+                                        )}
                                         {disponiveis.map((item) => (
                                             <option key={item.id} value={item.id}>
                                                 {item.nome} · {formatCurrency(item.preco)}
@@ -174,7 +188,8 @@ export function ModalEditarPedido({ pedido, open, onClose }: ModalEditarPedidoPr
                                 onClick={() => remove(index)}
                             />
                         </div>
-                    ))}
+                        )
+                    })}
                     <button
                         type="button"
                         onClick={() => append({ cardapioId: "", quantidade: 1 })}

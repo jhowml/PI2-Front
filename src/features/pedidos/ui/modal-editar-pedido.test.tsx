@@ -87,4 +87,22 @@ describe("ModalEditarPedido", () => {
         expect(taxaInput.value).toBe("")
         expect(taxaInput).toBeDisabled()
     })
+
+    it("should keep showing an item that has since become unavailable, instead of a blank 'Selecione um item' select", () => {
+        const pedidoComItemIndisponivel: Pedido = {
+            ...pedido,
+            itens: [
+                {
+                    id: 1, quantidade: 2, precoUnitario: "82.90", pedidoId: 1, cardapioId: 2,
+                    cardapio: { id: 2, nome: "Moqueca de peixe", descricao: null, preco: "95.00", categoria: "Pratos", disponivel: false, createdAt: "", deletedAt: null },
+                },
+            ],
+        }
+
+        render(<ModalEditarPedido pedido={pedidoComItemIndisponivel} open onClose={vi.fn()} />)
+
+        const select = screen.getByLabelText("Item 1") as HTMLSelectElement
+        expect(select.value).toBe("2")
+        expect(screen.getByRole("option", { name: /Moqueca de peixe/ })).toBeInTheDocument()
+    })
 })
