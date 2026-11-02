@@ -59,6 +59,8 @@ Acesse [http://localhost:3001](http://localhost:3001) e entre com o `APP_USERNAM
 | `npm start` | Executa o build na porta 3001 |
 | `npm run lint` | ESLint |
 | `npm test` | Testes unitários (Vitest) |
+| `npm run test:e2e` | E2E com Playwright + axe-core (sobe o próprio servidor na porta 3100) |
+| `npm run lighthouse` | Audita acessibilidade/performance com Lighthouse (requer `npx next dev --webpack -p 3100` rodando antes) |
 
 Variáveis opcionais do `next.config.ts` para o hot reload: `NEXT_DISABLE_WATCH_POLL=1` desliga o *polling* do watcher; `NEXT_WATCH_POLL_MS=250` muda o intervalo (padrão 500 ms).
 

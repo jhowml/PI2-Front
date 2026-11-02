@@ -24,34 +24,36 @@ export function PagamentoSection({ pedidoId }: { pedidoId: number }) {
     return (
         <Section title="Pagamento">
             {pagamento ? (
-                <dl className="flex flex-col gap-3">
-                    <Row
-                        label="Forma"
-                        value={
-                            <Select
-                                value={pagamento.forma}
-                                onChange={(event) => updateForma(event.target.value as FormaPagamento)}
-                                disabled={updatingForma}
-                                aria-label="Forma de pagamento"
-                                className="h-8 w-44 py-1 text-right"
-                            >
-                                {FORMAS_PAGAMENTO.map((value) => (
-                                    <option key={value} value={value}>
-                                        {FORMA_PAGAMENTO_LABELS[value]}
-                                    </option>
-                                ))}
-                            </Select>
-                        }
-                    />
-                    <Row label="Status" value={STATUS_PAGAMENTO_LABELS[pagamento.status]} />
-                    <Row label="Valor" value={formatCurrency(pagamento.valor)} />
-                    {pagamento.dataPagamento && <Row label="Pago em" value={formatDateTime(pagamento.dataPagamento)} />}
+                <div className="flex flex-col gap-3">
+                    <dl className="flex flex-col gap-3">
+                        <Row
+                            label="Forma"
+                            value={
+                                <Select
+                                    value={pagamento.forma}
+                                    onChange={(event) => updateForma(event.target.value as FormaPagamento)}
+                                    disabled={updatingForma}
+                                    aria-label="Forma de pagamento"
+                                    className="h-8 w-44 py-1 text-right"
+                                >
+                                    {FORMAS_PAGAMENTO.map((value) => (
+                                        <option key={value} value={value}>
+                                            {FORMA_PAGAMENTO_LABELS[value]}
+                                        </option>
+                                    ))}
+                                </Select>
+                            }
+                        />
+                        <Row label="Status" value={STATUS_PAGAMENTO_LABELS[pagamento.status]} />
+                        <Row label="Valor" value={formatCurrency(pagamento.valor)} />
+                        {pagamento.dataPagamento && <Row label="Pago em" value={formatDateTime(pagamento.dataPagamento)} />}
+                    </dl>
                     {pagamento.status === "PENDENTE" && (
                         <Button
                             label="Marcar como pago"
                             onClick={() => updateStatus("PAGO")}
                             disabled={updatingStatus}
-                            className="mt-1 self-start"
+                            className="self-start"
                         />
                     )}
                     {pagamento.status === "PAGO" && (
@@ -59,7 +61,7 @@ export function PagamentoSection({ pedidoId }: { pedidoId: number }) {
                             label="Marcar como estornado"
                             onClick={() => updateStatus("ESTORNADO")}
                             disabled={updatingStatus}
-                            className="mt-1 self-start bg-transparent text-destructive ring-1 ring-destructive/40 hover:bg-destructive/10"
+                            className="self-start bg-transparent text-destructive ring-1 ring-destructive/40 hover:bg-destructive/10"
                         />
                     )}
                     {pagamento.status === "ESTORNADO" && (
@@ -67,10 +69,10 @@ export function PagamentoSection({ pedidoId }: { pedidoId: number }) {
                             label="Desfazer estorno (marcar como pago)"
                             onClick={() => updateStatus("PAGO")}
                             disabled={updatingStatus}
-                            className="mt-1 self-start"
+                            className="self-start"
                         />
                     )}
-                </dl>
+                </div>
             ) : (
                 <div className="flex flex-wrap items-end gap-3">
                     <FormField label="Forma de pagamento">

@@ -1,0 +1,66 @@
+[
+  {
+    "slug": "login",
+    "path": "/login",
+    "performance": 66,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 91
+  },
+  {
+    "slug": "inicio",
+    "path": "/",
+    "performance": 42,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  {
+    "slug": "pedidos",
+    "path": "/pedidos",
+    "performance": 41,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  {
+    "slug": "pedido-detalhe",
+    "path": "/pedidos/1",
+    "performance": 41,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  {
+    "slug": "clientes",
+    "path": "/clientes",
+    "performance": 40,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  {
+    "slug": "cliente-detalhe",
+    "path": "/clientes/1",
+    "performance": 41,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  {
+    "slug": "cardapio",
+    "path": "/cardapio",
+    "performance": 40,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  },
+  {
+    "slug": "indicadores",
+    "path": "/dashboard",
+    "performance": 42,
+    "accessibility": 100,
+    "bestPractices": 100,
+    "seo": 100
+  }
+]

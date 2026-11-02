@@ -79,10 +79,29 @@ Submeter "Novo pedido" sem selecionar um cliente não movia o foco para lugar ne
   - Testes de comportamento (foco, teclado, ARIA) para `Modal`, `ClienteSelector`, `StatusActions`, `KeyboardShortcutsProvider`, `ModalEditarPedido`, `ModalCliente`, `ModalItemCardapio`, `ModalPedido`, `ChartCard`.
   - Testes de **zero violações de axe-core** (`vitest-axe`) para `Modal` (aberto), `ClienteSelector` (combobox aberto), `ChartCard` (gráfico e tabela), e a tela de login — todos com 0 violações medidas.
 
-## Não implementado nesta rodada (e por quê)
+- **E2E com Playwright + `@axe-core/playwright` (`npm run test:e2e`):** 10 testes, todos passando, API mockada via `page.route` (`e2e/fixtures.ts`), autenticação simulada via `localStorage`:
+  - **9 páginas** auditadas nas tags `wcag2a`/`wcag2aa`/`wcag21a`/`wcag21aa` (login, início, pedidos, detalhe do pedido, clientes, detalhe do cliente, cardápio, indicadores, e o modal de novo pedido): **0 violações em todas** (`e2e/a11y.spec.ts`).
+  - Durante essa varredura real em navegador foi encontrado e corrigido um **bug real**: a seção de pagamento (`PagamentoSection`) tinha um `<button>` como filho direto de um `<dl>`, violando a regra `definition-list` (WCAG 1.3.1) — os botões de ação foram movidos para fora da lista de definição (`src/features/pagamentos/ui/pagamento-section.tsx`).
+  - Um fluxo completo de **"novo pedido" inteiramente por teclado** (atalho `N`, combobox por seta/Enter, navegação por Tab, `Ctrl+Enter` para salvar), sem usar o mouse (`e2e/keyboard-novo-pedido.spec.ts`).
 
-- **E2E com Playwright + `@axe-core/playwright` em todas as 9 páginas** e **Lighthouse CI**: não foram configurados nesta sessão por custo de tempo/tokens (download de binário de navegador + escrita e execução de specs para cada página). A cobertura de axe feita via `vitest-axe` nos componentes mais críticos (modal, combobox, gráficos, login) cobre os padrões de interação mais arriscados, mas não substitui uma varredura de página inteira renderizada num navegador real.
-- **CI de front-end dedicado** (lint/build/vitest/Playwright) não foi criado — o CI existente é o do back-end.
-- Verificação visual de 320px de largura e zoom a 200% foi feita por revisão de código (nenhuma largura fixa em px encontrada; todos os contêineres usam `max-w-*`/`overflow-x-auto`), não por captura de tela num navegador real.
+- **Lighthouse (`npm run lighthouse`, via `playwright-lighthouse`, contra `next dev` local):**
 
-Essas três frentes ficam como próximo passo recomendado, fora do escopo coberto nesta sessão.
+  | Página | Performance | **Acessibilidade** | Boas práticas | SEO |
+  |---|---|---|---|---|
+  | Login | 66 | **100** | 100 | 91 |
+  | Início | 42 | **100** | 100 | 100 |
+  | Pedidos | 41 | **100** | 100 | 100 |
+  | Detalhe do pedido | 41 | **100** | 100 | 100 |
+  | Clientes | 40 | **100** | 100 | 100 |
+  | Detalhe do cliente | 41 | **100** | 100 | 100 |
+  | Cardápio | 40 | **100** | 100 | 100 |
+  | Indicadores | 42 | **100** | 100 | 100 |
+
+  Acessibilidade = **100** em todas as páginas (meta era ≥ 95). Os relatórios completos (JSON) ficam em `docs/acessibilidade/lighthouse-*.json`. **Performance é baixa porque a medição foi feita contra `next dev`** (sem minificação/otimização de produção) — não é um número comparável ao de produção; medir contra `next build && next start` fica como próximo passo.
+
+- **CI de front-end** (`.github/workflows/ci.yml`): job `test` (lint, build, `npm test`) e job `e2e` (instala o Chromium do Playwright e roda `npm run test:e2e`).
+
+## Não implementado (e por quê)
+
+- Lighthouse não foi incorporado ao CI nem medido contra um build de produção (`next build && next start`) — o script (`scripts/lighthouse-audit.mjs`) roda localmente contra `next dev`; os números de performance acima não são representativos de produção.
+- Verificação visual de 320px de largura e zoom a 200% foi feita por revisão de código (nenhuma largura fixa em px encontrada; todos os contêineres usam `max-w-*`/`overflow-x-auto`), não por captura de tela/teste automatizado de viewport.
